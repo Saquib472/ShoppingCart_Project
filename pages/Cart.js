@@ -1,9 +1,11 @@
-import React from 'react'
 import CartItem from '../components/CartItem'
-import { useSelector } from '../react-redux'
+import { useSelector } from 'react-redux'
+import { getAllCartItems, getCartError, getCartLoader } from '../store/slices/cartReducer'
 
 export default function Cart() {
-  const cartItems = useSelector((state) => state.cartItems)
+  const cartItems = useSelector(getAllCartItems)
+  const loading = useSelector(getCartLoader)
+  const error = useSelector(getCartError)
   return (
     <div className="cart-container">
       <h2>Items in Your Cart</h2>
@@ -14,16 +16,16 @@ export default function Cart() {
           <div className="quantity">Quantity</div>
           <div className="total">Total</div>
         </div>
-        {cartItems.map(
-          ({ productId, title, rating, price, imageUrl, quantity }) => (
+        {loading ? (<h1 style={{'textAlign': 'center'}}>Loading.........</h1>) : error ? (<h1 style={{'textAlign': 'center'}}>{error}</h1>) : cartItems?.map(
+          ({ id, title, rating, price, image, quantity }) => (
             <CartItem
-              key={productId}
-              productId={productId}
+              key={id}
+              id={id}
               title={title}
               price={price}
               quantity={quantity}
-              imageUrl={imageUrl}
-              rating={rating}
+              imageUrl={image}
+              rating={rating.rate}
             />
           )
         )}
@@ -31,14 +33,14 @@ export default function Cart() {
           <div></div>
           <div></div>
           <div></div>
-          <div className="total">
+          {!loading && !error && (<div className="total">
             $
-            {cartItems.reduce(
+            {cartItems?.reduce(
               (accumulator, currentItem) =>
                 accumulator + currentItem.quantity * currentItem.price,
               0
             )}
-          </div>
+          </div>)}
         </div>
       </div>
     </div>

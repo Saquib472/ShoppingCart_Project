@@ -1,11 +1,57 @@
-import React from 'react'
+import React, { cache, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import CartIcon from '../assets/cart-icon.svg'
-import { useSelector } from '../react-redux'
+import { useDispatch, useSelector } from 'react-redux'
+import { addProductsList, isLoading, setError } from '../store/slices/productsReducer'
+import { isLoadingCart, loadCartItems, setErrorCart } from '../store/slices/cartReducer'
 
 export default function Header() {
-  const cartItems = useSelector((state) => state.cartItems)
-  console.log(cartItems)
+  const cartItems = useSelector((state) => state.cartItems.list)
+  const dispatch = useDispatch()
+  useEffect(()=>{
+    //Fetching API using Custom Middleware
+    dispatch({
+      type : 'api/makeCall',
+      payload : {
+        url : 'products',
+        onStart : isLoading.type,
+        onSuccess : addProductsList.type,
+        onError : setError.type
+      }
+    })
+
+    dispatch({
+      type : 'api/makeCall',
+      payload : {
+        url : 'carts/5',
+        onStart : isLoadingCart.type,
+        onSuccess : loadCartItems.type,
+        onError : setErrorCart.type
+      }
+    })
+
+    // Fetching API using React
+    // const handleProducts = async ()=> {
+    //   dispatch(isLoading())
+    //   try{
+    //     const res = await fetch('https://fakestoreapi.com/products')
+    //     const data = await res.json()
+    //     dispatch(addProductsList(data))
+    //   }catch(err){
+    //     dispatch(setError())
+    //   }
+
+    //   dispatch(isLoadingCart())
+    //   try{
+    //     const res = await fetch('https://fakestoreapi.com/carts/5')
+    //     const data = await res.json()
+    //     dispatch(loadCartItems(data))
+    //   }catch(err){
+    //     dispatch(setErrorCart())
+    //   }
+    // }
+    // handleProducts()
+  },[])
   return (
     <header>
       <div className="header-contents">
@@ -13,9 +59,9 @@ export default function Header() {
           <Link to="/">Shopee</Link>
         </h1>
         <Link className="cart-icon" to="/cart">
-          <img src={CartIcon} alt="cart-icon" />
+          <img src={CartIcon} />
           <div className="cart-items-count">
-            {cartItems.reduce(
+            {cartItems?.reduce(
               (accumulator, currentItem) => accumulator + currentItem.quantity,
               0
             )}
