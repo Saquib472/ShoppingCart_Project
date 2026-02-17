@@ -8,6 +8,6 @@
 - Fetching API in redux 
 - Selectors in Redux
 - Memoize the selector using createSelector
-- Custom API Middleware in Redux 
+- Custom API Middleware in Redux --> Check api.js 
 - Redux Thunk
 - RTK Query
