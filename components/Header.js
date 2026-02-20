@@ -1,34 +1,39 @@
-import React, { cache, useEffect } from 'react'
+import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import CartIcon from '../assets/cart-icon.svg'
 import { useDispatch, useSelector } from 'react-redux'
-import { addProductsList, isLoading, setError } from '../store/slices/productsReducer'
-import { isLoadingCart, loadCartItems, setErrorCart } from '../store/slices/cartReducer'
+import { fetchProductsData } from '../store/slices/productsReducer'
+import { fetchCartItemsData } from '../store/slices/cartReducer'
 
 export default function Header() {
   const cartItems = useSelector((state) => state.cartItems.list)
   const dispatch = useDispatch()
   useEffect(()=>{
-    //Fetching API using Custom Middleware
-    dispatch({
-      type : 'api/makeCall',
-      payload : {
-        url : 'products',
-        onStart : isLoading.type,
-        onSuccess : addProductsList.type,
-        onError : setError.type
-      }
-    })
 
-    dispatch({
-      type : 'api/makeCall',
-      payload : {
-        url : 'carts/5',
-        onStart : isLoadingCart.type,
-        onSuccess : loadCartItems.type,
-        onError : setErrorCart.type
-      }
-    })
+    //Fetching API using Redux Thunk
+    dispatch(fetchProductsData())
+    dispatch(fetchCartItemsData())
+
+    //Fetching API using Custom Middleware
+    // dispatch({
+    //   type : 'api/makeCall',
+    //   payload : {
+    //     url : 'products',
+    //     onStart : isLoading.type,
+    //     onSuccess : addProductsList.type,
+    //     onError : setError.type
+    //   }
+    // })
+
+    // dispatch({
+    //   type : 'api/makeCall',
+    //   payload : {
+    //     url : 'carts/5',
+    //     onStart : isLoadingCart.type,
+    //     onSuccess : loadCartItems.type,
+    //     onError : setErrorCart.type
+    //   }
+    // })
 
     // Fetching API using React
     // const handleProducts = async ()=> {

@@ -58,7 +58,23 @@ export const getAllCartItems = createSelector(getCartItems, (cartItems)=> cartIt
 export const getCartLoader = (store)=> store.cartItems.loading
 export const getCartError = (store)=> store.cartItems.error
 
-export const {addCartItem, removeCartItem, increaseCartItemQuantity, decreaseCartItemQuantity, loadCartItems, isLoadingCart, setErrorCart} = cartReducerSlice.actions
+export const {addCartItem, removeCartItem, increaseCartItemQuantity, decreaseCartItemQuantity } = cartReducerSlice.actions
+
+const {loadCartItems, isLoadingCart, setErrorCart} = cartReducerSlice.actions
+
+//Redux Thunk Action Creator
+export const fetchCartItemsData = () => (dispatch) => {
+  dispatch(isLoadingCart())
+  fetch("https://fakestoreapi.com/carts/5")
+    .then(res => res.json())
+    .then((data) => {
+      dispatch(loadCartItems(data))
+    })
+    .catch(()=>{
+      dispatch(setErrorCart())
+    })
+}
+
 export default cartReducerSlice.reducer
 
 // import { produce } from "immer"

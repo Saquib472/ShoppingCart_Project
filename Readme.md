@@ -9,5 +9,5 @@
 - Selectors in Redux
 - Memoize the selector using createSelector
 - Custom API Middleware in Redux --> Check api.js 
-- Redux Thunk
+- Redux Thunk - func.js is the Redux Tunk Middleware but we don't need to create it cz redux comes with this.
 - RTK Query

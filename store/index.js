@@ -4,6 +4,7 @@ import cartReducer from './slices/cartReducer'
 import wishListReducer from './slices/wishListReducer'
 import { configureStore } from '@reduxjs/toolkit'
 import { apiMiddleware } from './middleware/api'
+import { func } from './middleware/func'
 
 // const reducer = combineReducers({
 //   products: productsReducer,
@@ -22,5 +23,5 @@ export const store = configureStore({
     cartItems: cartReducer,
     wishList: wishListReducer,
   },
-  middleware : ()=> [apiMiddleware]
+  // middleware : ()=> [apiMiddleware , func]
 })
