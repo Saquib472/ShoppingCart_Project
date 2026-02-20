@@ -10,4 +10,5 @@
 - Memoize the selector using createSelector
 - Custom API Middleware in Redux --> Check api.js 
 - Redux Thunk - func.js is the Redux Tunk Middleware but we don't need to create it cz redux comes with this.
+- API fetching using createAsyncThunk.
 - RTK Query

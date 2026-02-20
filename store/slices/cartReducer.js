@@ -1,8 +1,19 @@
-import { createSelector, createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSelector, createSlice } from "@reduxjs/toolkit";
 
 const findItemIndex = (state, action)=>{
   return state.findIndex((cartItem)=>cartItem.id === action.payload.id)
 }
+
+//Fetching API data using createAsyncThunk And extraReducers
+export const fetchCartItemsData = createAsyncThunk('cartItems/fetchCartItems', async ()=> {
+  try {
+    const response = await fetch("https://fakestoreapi.com/carts/5")
+    return response.json()
+  }catch(err){
+    throw err
+  }
+})
+
 const cartReducerSlice = createSlice({
   name : 'cart',
   initialState : {
@@ -11,19 +22,19 @@ const cartReducerSlice = createSlice({
     error : ''
   },
   reducers : {
-    isLoadingCart(state){
-      state.loading = true
-    },
-    setErrorCart(state, action){
-      state.loading = false
-      state.error = action.payload || `Something Went Wrong Please try after sometime :-(`
-    },
-    loadCartItems(state, action){
-      state.loading = false
-      state.list = action.payload.products.map((product)=> {
-        return {id : product.productId, quantity : product.quantity}
-      })
-    },
+    // isLoadingCart(state){
+    //   state.loading = true
+    // },
+    // setErrorCart(state, action){
+    //   state.loading = false
+    //   state.error = action.payload || `Something Went Wrong Please try after sometime :-(`
+    // },
+    // loadCartItems(state, action){
+    //   state.loading = false
+    //   state.list = action.payload.products.map((product)=> {
+    //     return {id : product.productId, quantity : product.quantity}
+    //   })
+    // },
     addCartItem(state, action){
       const existingItemIndex = findItemIndex(state.list, action)
       if(existingItemIndex !== -1) state.list[existingItemIndex].quantity += 1
@@ -44,7 +55,22 @@ const cartReducerSlice = createSlice({
       const existingItemIndex = findItemIndex(state.list, action)
       state.list[existingItemIndex].quantity = state.list[existingItemIndex].quantity + 1
     }
-  }
+  },
+  extraReducers : (builder) => {
+    builder.addCase(fetchCartItemsData.pending, (state)=> {
+      state.loading = true
+    }),
+    builder.addCase(fetchCartItemsData.fulfilled, (state, action)=>{
+      state.loading = false
+      state.list = action.payload.products.map((product)=> {
+        return {id : product.productId, quantity : product.quantity}
+      })
+    }),
+    builder.addCase(fetchCartItemsData.rejected, (state, action)=>{
+      state.loading = false
+      state.error = action.payload || `Something Went Wrong Please try after sometime :-(`
+    })
+  },
 })
 
 const getCartItems = ({products, cartItems}) => {
@@ -60,20 +86,20 @@ export const getCartError = (store)=> store.cartItems.error
 
 export const {addCartItem, removeCartItem, increaseCartItemQuantity, decreaseCartItemQuantity } = cartReducerSlice.actions
 
-const {loadCartItems, isLoadingCart, setErrorCart} = cartReducerSlice.actions
+// const {loadCartItems, isLoadingCart, setErrorCart} = cartReducerSlice.actions
 
 //Redux Thunk Action Creator
-export const fetchCartItemsData = () => (dispatch) => {
-  dispatch(isLoadingCart())
-  fetch("https://fakestoreapi.com/carts/5")
-    .then(res => res.json())
-    .then((data) => {
-      dispatch(loadCartItems(data))
-    })
-    .catch(()=>{
-      dispatch(setErrorCart())
-    })
-}
+// export const fetchCartItemsData = () => (dispatch) => {
+//   dispatch(isLoadingCart())
+//   fetch("https://fakestoreapi.com/carts/5")
+//     .then(res => res.json())
+//     .then((data) => {
+//       dispatch(loadCartItems(data))
+//     })
+//     .catch(()=>{
+//       dispatch(setErrorCart())
+//     })
+// }
 
 export default cartReducerSlice.reducer
 
